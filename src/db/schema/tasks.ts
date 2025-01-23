@@ -5,6 +5,8 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { z } from "zod";
 
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
@@ -17,5 +19,27 @@ export const tasks = pgTable("tasks", {
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
+
+export const selectTasksSchema = createSelectSchema(tasks);
+
+export const insertTasksSchema = createInsertSchema(tasks, {
+  name: (schema) => {
+    return schema.name.min(1).max(500);
+  },
+})
+  .required({
+    done: true,
+  })
+  .omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+  });
+
+export const updateTasksSchema = insertTasksSchema.partial();
+
+export type CreateTaskPayload = z.infer<typeof insertTasksSchema>;
+
+export type UpdateTaskPayload = z.infer<typeof updateTasksSchema>;
 
 export default tasks;
