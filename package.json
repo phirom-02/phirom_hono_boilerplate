@@ -8,15 +8,14 @@
     "lint": "eslint .",
     "lint:fix": "bun run lint --fix",
     "db:generate": "bunx drizzle-kit generate",
-    "db:migrate": "cross-env DB_MIGRATING=TRUE tsx src/db/migrate.ts",
-    "db:seed": "cross-env DB_SEEDING=TRUE tsx src/db/seed.ts",
-    "server:dev": "cross-env BUN_ENV=development tsx watch src/index.ts",
+    "db:migrate": "cross-env DB_MIGRATING=TRUE bun src/db/migrate.ts",
+    "db:seed": "cross-env DB_SEEDING=TRUE bun src/db/seed.ts",
+    "server:dev": "cross-env BUN_ENV=development bun --hot src/index.ts",
     "server:test": "cross-env BUN_ENV=test vitest",
     "server:start": "bun ./dist/src/index.js",
     "build": "tsc && tsc-alias"
   },
   "dependencies": {
-    "@hono/node-server": "^1.13.7",
     "@hono/zod-openapi": "^0.18.3",
     "@scalar/hono-api-reference": "^0.5.165",
     "dotenv": "^16.4.7",
