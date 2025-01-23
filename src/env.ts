@@ -35,7 +35,7 @@ const EnvSchema = z
       "error",
       "warn",
       "info",
-      "qdebug",
+      "debug",
       "trace",
       "silent",
     ]),
