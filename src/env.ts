@@ -69,7 +69,7 @@ if (error instanceof ZodError) {
   const e = new Error(message);
   throw e;
 } else {
-  console.error(error);
+  console.error(error ?? "");
 }
 
 export { env };
