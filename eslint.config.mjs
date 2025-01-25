@@ -14,6 +14,7 @@ export default antfu(
   },
   {
     rules: {
+      allowSingleLine: true,
       "no-console": ["warn"],
       "antfu/no-top-level-await": ["off"],
       "node/prefer-global/process": ["off"],
@@ -32,5 +33,5 @@ export default antfu(
         },
       ],
     },
-  },
+  }
 );

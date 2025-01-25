@@ -1,3 +1,5 @@
+import type { z } from "zod";
+
 import {
   boolean,
   pgTable,
@@ -6,7 +8,6 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { z } from "zod";
 
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),

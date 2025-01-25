@@ -1,4 +1,5 @@
-import { Context } from "hono";
+import type { Context } from "hono";
+
 import tasksService from "./tasks-service";
 
 const tasksController = {
@@ -19,7 +20,7 @@ const tasksController = {
 
   async getTaskById(c: Context) {
     const { id } = c.req.param();
-    const task = await tasksService.getTaskById(parseInt(id));
+    const task = await tasksService.getTaskById(Number(id));
     return c.json({
       data: task,
     });
@@ -29,7 +30,7 @@ const tasksController = {
     const payload = await c.req.json();
     const { id } = c.req.param();
 
-    const task = await tasksService.updateTask(parseInt(id), payload);
+    const task = await tasksService.updateTask(Number(id), payload);
     return c.json({
       data: task,
     });
@@ -38,7 +39,7 @@ const tasksController = {
   async deleteTask(c: Context) {
     const { id } = c.req.param();
 
-    await tasksService.deleteTask(parseInt(id));
+    await tasksService.deleteTask(Number(id));
     return c.json({
       data: true,
     });

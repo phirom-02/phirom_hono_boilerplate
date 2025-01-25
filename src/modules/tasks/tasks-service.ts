@@ -1,7 +1,8 @@
 import { eq } from "drizzle-orm";
 
+import type { CreateTaskPayload, UpdateTaskPayload } from "@/db/schema/tasks";
+
 import db from "@/db";
-import { CreateTaskPayload, UpdateTaskPayload } from "@/db/schema/tasks";
 import tasks from "@/db/schema/tasks";
 
 const tasksService = {
