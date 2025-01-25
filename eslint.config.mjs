@@ -9,15 +9,15 @@ export default antfu(
       indent: 2,
       semi: true,
       quotes: "double",
-      allowSingline: true,
     },
     ignores: ["**/migrations/*"],
   },
   {
     rules: {
       "style/comma-dangle": "off",
-      "style/brace-style": "off",
+      "style/arrow-parens": "off",
       "jsonc/comma-dangle": "off",
+      "style/brace-style": "off",
       "no-console": ["warn"],
       "antfu/no-top-level-await": ["off"],
       "node/prefer-global/process": ["off"],
