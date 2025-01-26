@@ -1,4 +1,4 @@
-enum HttpStatusCode {
+enum HttpStatusCodes {
   // Generated file. Do not edit
   // Codes retrieved on Thu, 03 Oct 2024 12:05:14 GMT from https://raw.githubusercontent.com/prettymuchbryce/http-status-codes/refs/heads/master/codes.json
   /**
@@ -404,4 +404,4 @@ enum HttpStatusCode {
   MISDIRECTED_REQUEST = 421,
 }
 
-export default HttpStatusCode;
+export default HttpStatusCodes;

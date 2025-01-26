@@ -1,4 +1,4 @@
-enum HttpStatusPhrase {
+enum HttpStatusPhrases {
   /**
    * Official Documentation @ https://tools.ietf.org/html/rfc7231#section-6.3.3
    *
@@ -412,4 +412,4 @@ enum HttpStatusPhrase {
   MISDIRECTED_REQUEST = "Misdirected Request",
 }
 
-export default HttpStatusPhrase;
+export default HttpStatusPhrases;
