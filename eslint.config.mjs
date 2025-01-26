@@ -14,6 +14,7 @@ export default antfu(
   },
   {
     rules: {
+      "style/operator-linebreak": "off",
       "style/comma-dangle": "off",
       "style/arrow-parens": "off",
       "jsonc/comma-dangle": "off",
@@ -21,7 +22,12 @@ export default antfu(
       "no-console": ["warn"],
       "antfu/no-top-level-await": ["off"],
       "node/prefer-global/process": ["off"],
-      "node/no-process-env": ["error"],
+      "node/no-process-env": [
+        "error",
+        {
+          allowedVariables: BUN_ENV,
+        },
+      ],
       "perfectionist/sort-imports": [
         "error",
         {
