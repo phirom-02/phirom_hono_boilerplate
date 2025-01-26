@@ -2,6 +2,7 @@ import { Hono } from "hono";
 
 import routes from "./routes";
 import {
+  errorHandler,
   notFoundHandler,
   pinoLogger,
   serveFavicon,
@@ -16,5 +17,7 @@ app.notFound(notFoundHandler());
 app.use(serveFavicon("public/favicon.ico"));
 
 app.route("/api", routes);
+
+app.onError(errorHandler());
 
 export default app;
