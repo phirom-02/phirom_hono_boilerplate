@@ -1,6 +1,6 @@
 import type { NotFoundHandler } from "hono";
 
-import { HttpStatusCodes, HttpStatusPhrases } from "../enums";
+import { HttpStatusCodes, HttpStatusPhrases } from "../constants";
 
 export default function notFoundHandler(): NotFoundHandler {
   return async (c) => {

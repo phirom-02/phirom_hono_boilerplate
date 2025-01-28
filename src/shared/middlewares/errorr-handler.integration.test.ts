@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { BUN_ENV } from "@/env";
 
 import errorHandler from "./error-handler";
-import { HttpStatusCodes } from "../enums";
+import { HttpStatusCodes } from "../constants";
 
 describe("onError", () => {
   const mockController = vi.fn().mockImplementation(() => {

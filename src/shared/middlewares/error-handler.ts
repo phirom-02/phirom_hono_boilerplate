@@ -1,7 +1,7 @@
 import type { ErrorHandler } from "hono";
 import type { ContentfulStatusCode, StatusCode } from "hono/utils/http-status";
 
-import { HttpStatusCodes } from "../enums";
+import { HttpStatusCodes } from "../constants";
 
 export default function errorHandler(): ErrorHandler {
   return (err, c) => {

@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
 
-import { HttpStatusPhrases, HttpStatusCodes } from "../enums";
+import { HttpStatusPhrases, HttpStatusCodes } from "../constants";
 import notFoundHandler from "./not-found-handler";
 
 describe("notFoundHandler", () => {
