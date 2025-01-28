@@ -1,23 +1,11 @@
-import { Hono } from "hono";
-
 import routes from "./routes";
-import {
-  errorHandler,
-  notFoundHandler,
-  pinoLogger,
-  serveFavicon,
-} from "./shared/middlewares";
+import { configureOpenApi } from "./shared/lib";
+import createApp from "./shared/lib/create-app";
 
-const app = new Hono();
+const app = createApp();
 
-app.use(pinoLogger());
-
-app.notFound(notFoundHandler());
-
-app.use(serveFavicon("public/favicon.ico"));
+configureOpenApi(app);
 
 app.route("/api", routes);
-
-app.onError(errorHandler());
 
 export default app;

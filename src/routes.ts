@@ -1,8 +1,7 @@
-import { Hono } from "hono";
-
 import tasksRoute from "@/modules/tasks/tasks-routes";
+import { createApp, createRouter } from "./shared/lib";
 
-const router = new Hono();
+const router = createApp();
 
 const routes = [
   {
@@ -14,5 +13,7 @@ const routes = [
 routes.forEach((el) => {
   router.route(el.path, el.route);
 });
+
+export type AppType = (typeof routes)[number];
 
 export default router;
