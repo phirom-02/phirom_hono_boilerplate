@@ -1,8 +1,7 @@
 import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
 
-import HttpStatusCode from "../enums/http-status-codes";
-import HttpStatusPhrase from "../enums/http-status-phrase";
+import { HttpStatusPhrases, HttpStatusCodes } from "../constants";
 import notFoundHandler from "./not-found-handler";
 
 describe("notFoundHandler", () => {
@@ -12,11 +11,11 @@ describe("notFoundHandler", () => {
     app.notFound(notFoundHandler());
 
     const response = await app.request("/non-existent-path");
-    expect(response.status).toBe(HttpStatusCode.NOT_FOUND);
+    expect(response.status).toBe(HttpStatusCodes.NOT_FOUND);
 
     const json = await response.json();
     expect(json).toEqual({
-      message: `${HttpStatusPhrase.NOT_FOUND} - ${reqPath}`,
+      message: `${HttpStatusPhrases.NOT_FOUND} - ${reqPath}`,
     });
   });
 });
