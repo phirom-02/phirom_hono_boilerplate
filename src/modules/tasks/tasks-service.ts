@@ -1,9 +1,15 @@
 import { eq } from "drizzle-orm";
+import { HTTPException } from "hono/http-exception";
 
 import type { CreateTaskPayload, UpdateTaskPayload } from "@/db/schema/tasks";
 
 import db from "@/db";
 import tasks from "@/db/schema/tasks";
+import {
+  HttpStatusCodes,
+  ZOD_ERROR_CODES,
+  ZOD_ERROR_MESSAGES,
+} from "@/shared/constants";
 
 const tasksService = {
   async createTask(createTaskPayload: CreateTaskPayload) {
@@ -16,27 +22,68 @@ const tasksService = {
   },
 
   async getTasks() {
-    const _tasks = await db.select().from(tasks);
-    return _tasks;
+    const result = await db.query.tasks.findMany();
+    return result;
   },
 
   async getTaskById(id: number) {
-    const _task = await db.select().from(tasks).where(eq(tasks.id, id));
-    return _task[0];
+    const task = await db.query.tasks.findFirst({
+      where(fields, operators) {
+        return operators.eq(fields.id, id);
+      },
+    });
+
+    if (!task) {
+      throw new HTTPException(HttpStatusCodes.NOT_FOUND, {
+        message: "Task not found",
+      });
+    }
+
+    return task;
   },
 
   async updateTask(id: number, updateTaskPayload: UpdateTaskPayload) {
-    const _task = await db
+    if (!Object.keys(updateTaskPayload).length) {
+      throw new HTTPException(HttpStatusCodes.UNPROCESSABLE_ENTITY, {
+        cause: {
+          issues: [
+            {
+              code: ZOD_ERROR_CODES.INVALID_UPDATES,
+              path: [],
+              message: ZOD_ERROR_MESSAGES.NO_UPDATES,
+            },
+          ],
+          name: "ZodError",
+        },
+      });
+    }
+
+    const [task] = await db
       .update(tasks)
       .set(updateTaskPayload)
       .where(eq(tasks.id, id))
       .returning();
-    return _task[0];
+
+    if (!task) {
+      throw new HTTPException(HttpStatusCodes.NOT_FOUND, {
+        message: "Task not found",
+      });
+    }
+
+    return task;
   },
 
   async deleteTask(id: number) {
-    await db.delete(tasks).where(eq(tasks.id, id));
-    return true;
+    const [deletedTask] = await db
+      .delete(tasks)
+      .where(eq(tasks.id, id))
+      .returning();
+
+    if (!deletedTask) {
+      throw new HTTPException(HttpStatusCodes.NOT_FOUND, {
+        message: "Task not found",
+      });
+    }
   },
 };
 
