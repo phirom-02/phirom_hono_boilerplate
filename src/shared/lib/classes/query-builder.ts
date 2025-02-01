@@ -1,5 +1,7 @@
 import {
+  asc,
   between,
+  desc,
   eq,
   gt,
   gte,
@@ -13,6 +15,7 @@ import {
   notBetween,
   notInArray,
   notLike,
+  SQL,
   SQLWrapper,
 } from "drizzle-orm";
 import { IQueryBuilder } from "./types";
@@ -25,6 +28,8 @@ export default class QueryBuilder<T extends TableSchema, F extends TableField>
   implements IQueryBuilder
 {
   private conditions: SQLWrapper[] = [];
+
+  private sortColums: SQL[] = [];
 
   constructor(
     private queryString: Record<string, string>,
@@ -145,7 +150,42 @@ export default class QueryBuilder<T extends TableSchema, F extends TableField>
     return this;
   }
 
+  sort() {
+    if (this.queryString?.sort) {
+      const sortFields = this.queryString.sort
+        .split(",")
+        .map((field) => field.trim());
+
+      this.sortColums = sortFields
+        .map((field) => {
+          const isDescending = field.startsWith("-");
+
+          const fieldName = isDescending ? field.substring(1) : field;
+
+          if (fieldName in this.table) {
+            return isDescending
+              ? //@ts-expect-error
+                desc(this.table[fieldName])
+              : //@ts-expect-error
+                asc(this.table[fieldName]);
+          }
+
+          return null;
+        })
+        .filter((field) => field !== null);
+    } else {
+      if ("id" in this.table) {
+        this.sortColums = [desc(this.table["id"])];
+      }
+    }
+
+    return this;
+  }
+
   getQueries() {
-    return { filter: this.conditions };
+    return {
+      filter: this.conditions,
+      sortColumns: this.sortColums,
+    };
   }
 }

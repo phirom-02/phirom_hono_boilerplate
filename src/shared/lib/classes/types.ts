@@ -1,7 +1,8 @@
-import { SQLWrapper } from "drizzle-orm";
+import { SQL, SQLWrapper } from "drizzle-orm";
 
 export type GetQueriesReturns = {
   filter: SQLWrapper[];
+  sortColumns: SQL[];
 };
 
 export interface IQueryBuilder {

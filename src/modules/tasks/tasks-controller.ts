@@ -36,7 +36,10 @@ const tasksController: TasksController = {
   async getTasks(c) {
     const queryString = c.req.query();
 
-    const queries = new QueryBuilder(queryString, tasks).filter().getQueries();
+    const queries = new QueryBuilder(queryString, tasks)
+      .filter()
+      .sort()
+      .getQueries();
 
     const _tasks = await tasksService.getTasks(queries);
 

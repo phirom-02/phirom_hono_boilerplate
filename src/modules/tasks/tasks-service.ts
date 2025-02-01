@@ -28,6 +28,11 @@ const tasksService = {
       // @ts-expect-error
       query = query.where(and(...queries.filter));
     }
+    if (queries.sortColumns.length) {
+      // @ts-expect-error
+      query = query.orderBy(...queries.sortColumns);
+    }
+
     return await query;
   },
 
