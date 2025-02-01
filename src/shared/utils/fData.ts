@@ -1,4 +1,6 @@
-export const normalizeStringValue = (value: string) => {
+export const normalizeStringValue = (value: string | undefined) => {
+  if (value === undefined) return;
+
   if (!isNaN(Number(value))) {
     return Number(value);
   }
