@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 
 import type { CreateTaskPayload, UpdateTaskPayload } from "@/db/schema/tasks";
@@ -10,6 +10,7 @@ import {
   ZOD_ERROR_CODES,
   ZOD_ERROR_MESSAGES,
 } from "@/shared/constants";
+import { GetQueriesReturns } from "@/shared/lib/classes/types";
 
 const tasksService = {
   async createTask(createTaskPayload: CreateTaskPayload) {
@@ -21,9 +22,13 @@ const tasksService = {
     return newTask[0];
   },
 
-  async getTasks() {
-    const result = await db.query.tasks.findMany();
-    return result;
+  async getTasks(queries: GetQueriesReturns) {
+    let query = db.select().from(tasks);
+    if (queries.filter.length) {
+      // @ts-expect-error
+      query = query.where(and(...queries.filter));
+    }
+    return await query;
   },
 
   async getTaskById(id: number) {

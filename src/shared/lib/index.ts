@@ -5,3 +5,4 @@ export {
 } from "./create-app";
 
 export { default as configureOpenApi } from "./configure-openapi";
+export * from "./classes";
