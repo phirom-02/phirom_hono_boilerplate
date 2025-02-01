@@ -9,7 +9,9 @@ import {
 
 import { AppRouteHandler } from "@/shared/lib/types";
 import { HttpStatusCodes } from "@/shared/constants";
-import { UpdateTaskPayload } from "@/db/schema/tasks";
+import tasks, { UpdateTaskPayload } from "@/db/schema/tasks";
+import { QueryBuilder } from "@/shared/lib";
+import { ContentfulStatusCode } from "hono/utils/http-status";
 
 type TasksController = {
   getTasks: AppRouteHandler<GetTasksRoute>;
@@ -32,8 +34,17 @@ const tasksController: TasksController = {
   },
 
   async getTasks(c) {
-    const tasks = await tasksService.getTasks();
-    return c.json(tasks, HttpStatusCodes.OK);
+    const queryString = c.req.query();
+
+    const queries = new QueryBuilder(queryString, tasks)
+      .filter()
+      .sort()
+      .paginate()
+      .getQueries();
+
+    const _tasks = await tasksService.getTasks(queries);
+
+    return c.json(_tasks, HttpStatusCodes.OK);
   },
 
   async getTaskById(c) {
@@ -56,8 +67,7 @@ const tasksController: TasksController = {
 
     await tasksService.deleteTask(id);
 
-    // @ts-expect-error
-    return c.json(null, HttpStatusCodes.NO_CONTENT);
+    return c.json(null, HttpStatusCodes.NO_CONTENT as ContentfulStatusCode);
   },
 };
 
