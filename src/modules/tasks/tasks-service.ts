@@ -1,4 +1,4 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, SelectedFields, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 
 import type { CreateTaskPayload, UpdateTaskPayload } from "@/db/schema/tasks";
@@ -31,6 +31,14 @@ const tasksService = {
     if (queries.sortColumns.length) {
       // @ts-expect-error
       query = query.orderBy(...queries.sortColumns);
+    }
+    if (queries.limitValue !== null) {
+      // @ts-expect-error
+      query = query.limit(queries.limitValue);
+    }
+    if (queries.offsetValue !== null) {
+      // @ts-expect-error
+      query = query.offset(queries.offsetValue);
     }
 
     return await query;

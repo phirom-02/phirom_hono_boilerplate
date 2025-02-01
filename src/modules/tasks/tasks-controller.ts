@@ -39,6 +39,7 @@ const tasksController: TasksController = {
     const queries = new QueryBuilder(queryString, tasks)
       .filter()
       .sort()
+      .paginate()
       .getQueries();
 
     const _tasks = await tasksService.getTasks(queries);

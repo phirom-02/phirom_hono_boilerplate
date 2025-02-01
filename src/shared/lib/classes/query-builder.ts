@@ -31,6 +31,10 @@ export default class QueryBuilder<T extends TableSchema, F extends TableField>
 
   private sortColums: SQL[] = [];
 
+  private limitValue: number | null = null;
+
+  private offsetValue: number | null = null;
+
   constructor(
     private queryString: Record<string, string>,
     private table: T
@@ -182,10 +186,26 @@ export default class QueryBuilder<T extends TableSchema, F extends TableField>
     return this;
   }
 
+  paginate() {
+    const page = Number(this.queryString?.page || 1);
+
+    const limit = Number(this.queryString?.limit || 100);
+
+    const offset = (page - 1) * limit;
+
+    this.limitValue = limit;
+
+    this.offsetValue = offset;
+
+    return this;
+  }
+
   getQueries() {
     return {
       filter: this.conditions,
       sortColumns: this.sortColums,
+      limitValue: this.limitValue,
+      offsetValue: this.offsetValue,
     };
   }
 }
