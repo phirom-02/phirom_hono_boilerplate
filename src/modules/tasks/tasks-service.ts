@@ -1,4 +1,4 @@
-import { and, eq, SelectedFields, sql } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 
 import type { CreateTaskPayload, UpdateTaskPayload } from "@/db/schema/tasks";
@@ -7,6 +7,7 @@ import db from "@/db";
 import tasks from "@/db/schema/tasks";
 import {
   HttpStatusCodes,
+  HttpStatusPhrases,
   ZOD_ERROR_CODES,
   ZOD_ERROR_MESSAGES,
 } from "@/shared/constants";
@@ -53,7 +54,7 @@ const tasksService = {
 
     if (!task) {
       throw new HTTPException(HttpStatusCodes.NOT_FOUND, {
-        message: "Task not found",
+        message: HttpStatusPhrases.NOT_FOUND,
       });
     }
 
@@ -84,7 +85,7 @@ const tasksService = {
 
     if (!task) {
       throw new HTTPException(HttpStatusCodes.NOT_FOUND, {
-        message: "Task not found",
+        message: HttpStatusPhrases.NOT_FOUND,
       });
     }
 
@@ -99,7 +100,7 @@ const tasksService = {
 
     if (!deletedTask) {
       throw new HTTPException(HttpStatusCodes.NOT_FOUND, {
-        message: "Task not found",
+        message: HttpStatusPhrases.NOT_FOUND,
       });
     }
   },
