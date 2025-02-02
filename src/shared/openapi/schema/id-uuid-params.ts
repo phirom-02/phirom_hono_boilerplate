@@ -9,6 +9,9 @@ const IdUUIDParamsSchema = z.object({
         name: "id",
         in: "path",
         required: true,
+        schema: {
+          nullable: false,
+        },
       },
       required: ["id"],
       example: "4651e634-a530-4484-9b09-9616a28f35e3",

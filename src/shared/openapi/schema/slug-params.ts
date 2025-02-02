@@ -13,6 +13,7 @@ const SlugParamsSchema = z.object({
         name: "slug",
         in: "path",
         required: true,
+        schema: { nullable: false },
       },
       required: ["slug"],
       example: "my-cool-article",
