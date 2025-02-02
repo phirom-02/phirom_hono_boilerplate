@@ -23,6 +23,7 @@ import { normalizeStringValue } from "@/shared/utils/fData";
 import { HTTPException } from "hono/http-exception";
 import { HttpStatusCodes } from "@/shared/constants";
 import { TableField, TableSchema } from "@/db/types";
+import env from "@/env";
 
 export default class QueryBuilder<T extends TableSchema, F extends TableField>
   implements IQueryBuilder
@@ -52,9 +53,7 @@ export default class QueryBuilder<T extends TableSchema, F extends TableField>
 
       // Skip if field name not in table schema
       if (!(fieldName in this.table) || !value) {
-        throw new HTTPException(HttpStatusCodes.BAD_REQUEST, {
-          message: "Provide appropriate filtering value",
-        });
+        continue;
       }
 
       // Handle operator queries (gte, lte, gt, lt, like, nlike, in, nin, ne)
@@ -122,11 +121,17 @@ export default class QueryBuilder<T extends TableSchema, F extends TableField>
             break;
           case "between":
             [min, max] = value.split(",").map(normalizeStringValue);
+
+            this.checkInvalidRangesValue(min, max);
+
             // @ts-expect-error
             this.conditions.push(between(this.table[fieldName], min, max));
             break;
           case "nbetween":
             [min, max] = value.split(",").map(normalizeStringValue);
+
+            this.checkInvalidRangesValue(min, max);
+
             // @ts-expect-error
             this.conditions.push(notBetween(this.table[fieldName], min, max));
             break;
@@ -189,7 +194,10 @@ export default class QueryBuilder<T extends TableSchema, F extends TableField>
   paginate() {
     const page = Number(this.queryString?.page || 1);
 
-    const limit = Number(this.queryString?.limit || 100);
+    const limit = Math.min(
+      Number(this.queryString?.limit || 100),
+      env.MAX_LIMIT
+    );
 
     const offset = (page - 1) * limit;
 
@@ -207,5 +215,60 @@ export default class QueryBuilder<T extends TableSchema, F extends TableField>
       limitValue: this.limitValue,
       offsetValue: this.offsetValue,
     };
+  }
+
+  private checkInvalidRangesValue(minValue: unknown, maxValue?: unknown) {
+    // Values cannot be null
+    if (minValue === null || maxValue === null) {
+      throw new HTTPException(HttpStatusCodes.BAD_REQUEST, {
+        message: "Range values cannot be null",
+      });
+    }
+
+    // Boolean ranges don't make sense
+    if (typeof minValue === "boolean" || typeof maxValue === "boolean") {
+      throw new HTTPException(HttpStatusCodes.BAD_REQUEST, {
+        message: "Boolean values cannot be used in range comparisons",
+      });
+    }
+
+    // String ranges are not supported
+    if (typeof minValue === "string" || typeof maxValue === "string") {
+      throw new HTTPException(HttpStatusCodes.BAD_REQUEST, {
+        message: "String values cannot be used in range comparisons",
+      });
+    }
+
+    // Both values must be of the same type
+    if (typeof minValue !== typeof maxValue) {
+      throw new HTTPException(HttpStatusCodes.BAD_REQUEST, {
+        message: "Range values must be of the same type",
+      });
+    }
+
+    // Handle date ranges
+    if (minValue instanceof Date && maxValue instanceof Date) {
+      if (minValue.getTime() > maxValue.getTime()) {
+        throw new HTTPException(HttpStatusCodes.BAD_REQUEST, {
+          message: "Invalid date range: start date must be before end date",
+        });
+      }
+      return;
+    }
+
+    // Handle numeric ranges
+    if (typeof minValue === "number" && typeof maxValue === "number") {
+      if (minValue > maxValue) {
+        throw new HTTPException(HttpStatusCodes.BAD_REQUEST, {
+          message:
+            "Invalid numeric range: first value must be less than second value",
+        });
+      }
+      return;
+    }
+
+    throw new HTTPException(HttpStatusCodes.BAD_REQUEST, {
+      message: "Invalid range values",
+    });
   }
 }
