@@ -14,11 +14,20 @@ export default antfu(
   },
   {
     rules: {
-      allowSingleLine: true,
+      "style/operator-linebreak": "off",
+      "style/comma-dangle": "off",
+      "style/arrow-parens": "off",
+      "jsonc/comma-dangle": "off",
+      "style/brace-style": "off",
       "no-console": ["warn"],
       "antfu/no-top-level-await": ["off"],
       "node/prefer-global/process": ["off"],
-      "node/no-process-env": ["error"],
+      "node/no-process-env": [
+        "error",
+        {
+          allowedVariables: BUN_ENV,
+        },
+      ],
       "perfectionist/sort-imports": [
         "error",
         {

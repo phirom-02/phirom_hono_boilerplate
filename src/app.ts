@@ -1,11 +1,10 @@
-import { Hono } from "hono";
-
 import routes from "./routes";
-import { pinoLogger } from "./shared/middlewares/pino-logger";
+import { configureOpenApi } from "./shared/lib";
+import createApp from "./shared/lib/create-app";
 
-const app = new Hono();
+const app = createApp();
 
-app.use(pinoLogger());
+configureOpenApi(app);
 
 app.route("/api", routes);
 
