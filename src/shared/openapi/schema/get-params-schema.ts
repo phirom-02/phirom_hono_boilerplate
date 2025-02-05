@@ -28,6 +28,7 @@ export default function getParamsSchema({
           name,
           in: "path",
           required: true,
+          schema: { nullable: false },
         },
         required: [name],
         example: examples[validator],

@@ -30,6 +30,11 @@ const EnvSchema = z
   .object({
     BUN_ENV: z.string().default("development"),
     PORT: z.coerce.number().default(3000),
+    DATABASE_URL: z.string().url(),
+    DATABASE_AUTH_TOKEN: z.string().optional(),
+    DB_MIGRATING: stringToBoolean,
+    DB_SEEDING: stringToBoolean,
+    MAX_LIMIT: z.coerce.number().default(100),
     LOG_LEVEL: z.enum([
       "fatal",
       "error",
@@ -39,10 +44,6 @@ const EnvSchema = z
       "trace",
       "silent",
     ]),
-    DATABASE_URL: z.string().url(),
-    DATABASE_AUTH_TOKEN: z.string().optional(),
-    DB_MIGRATING: stringToBoolean,
-    DB_SEEDING: stringToBoolean,
   })
   .superRefine((input, ctx) => {
     if (input.BUN_ENV === BUN_ENV.production && !input.DATABASE_AUTH_TOKEN) {

@@ -36,6 +36,8 @@ export const insertTasksSchema = createInsertSchema(tasks, {
 
 export const updateTasksSchema = insertTasksSchema.partial();
 
+export type SelectTasksSchema = z.infer<typeof selectTasksSchema>;
+
 export type CreateTaskPayload = z.infer<typeof insertTasksSchema>;
 
 export type UpdateTaskPayload = z.infer<typeof updateTasksSchema>;

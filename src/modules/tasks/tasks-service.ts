@@ -1,4 +1,4 @@
-import { and, eq, SelectedFields, sql } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 
 import type { CreateTaskPayload, UpdateTaskPayload } from "@/db/schema/tasks";
@@ -7,6 +7,7 @@ import db from "@/db";
 import tasks from "@/db/schema/tasks";
 import {
   HttpStatusCodes,
+  HttpStatusPhrases,
   ZOD_ERROR_CODES,
   ZOD_ERROR_MESSAGES,
 } from "@/shared/constants";
@@ -32,6 +33,14 @@ const tasksService = {
       // @ts-expect-error
       query = query.orderBy(...queries.sortColumns);
     }
+
+    if (queries.filter.length) {
+      // @ts-expect-error
+      query = query.where(and(...queries.filter));
+    }
+
+    const totalElements = (await query).length;
+
     if (queries.limitValue !== null) {
       // @ts-expect-error
       query = query.limit(queries.limitValue);
@@ -41,7 +50,35 @@ const tasksService = {
       query = query.offset(queries.offsetValue);
     }
 
-    return await query;
+    const data = await query;
+
+    const isEmpty = data.length === 0;
+
+    const totalPages = Math.ceil(totalElements / queries.limitValue);
+
+    const page = Math.floor(queries.offsetValue / queries.limitValue) + 1;
+
+    const isFirstPage = page === 1;
+
+    const isLastPage = page === totalPages;
+
+    const limit = queries.limitValue;
+
+    const elementCount = data.length;
+
+    return {
+      data,
+      pagination: {
+        isEmpty,
+        isFirstPage,
+        isLastPage,
+        limit,
+        elementCount,
+        page,
+        totalPages,
+        totalElements,
+      },
+    };
   },
 
   async getTaskById(id: number) {
@@ -53,7 +90,7 @@ const tasksService = {
 
     if (!task) {
       throw new HTTPException(HttpStatusCodes.NOT_FOUND, {
-        message: "Task not found",
+        message: HttpStatusPhrases.NOT_FOUND,
       });
     }
 
@@ -84,7 +121,7 @@ const tasksService = {
 
     if (!task) {
       throw new HTTPException(HttpStatusCodes.NOT_FOUND, {
-        message: "Task not found",
+        message: HttpStatusPhrases.NOT_FOUND,
       });
     }
 
@@ -99,7 +136,7 @@ const tasksService = {
 
     if (!deletedTask) {
       throw new HTTPException(HttpStatusCodes.NOT_FOUND, {
-        message: "Task not found",
+        message: HttpStatusPhrases.NOT_FOUND,
       });
     }
   },

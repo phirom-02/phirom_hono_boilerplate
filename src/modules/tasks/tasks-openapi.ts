@@ -5,8 +5,9 @@ import {
 } from "@/db/schema/tasks";
 import { HttpStatusCodes } from "@/shared/constants";
 import { notFoundSchema } from "@/shared/constants/constants";
+import { responsePagination } from "@/shared/openapi/schema/api-response-schema";
 import { jsonContent, jsonContentRequired } from "@/shared/openapi/helpers";
-import { createErrorSchema, IdParamsSchema } from "@/shared/openapi/schemas";
+import { createErrorSchema, IdParamsSchema } from "@/shared/openapi/schema";
 import { createRoute, z } from "@hono/zod-openapi";
 
 const tags = ["Tasks"];
@@ -34,7 +35,7 @@ const tasksOpenApi = {
     tags,
     responses: {
       [HttpStatusCodes.OK]: jsonContent(
-        z.array(selectTasksSchema),
+        responsePagination(z.array(selectTasksSchema)),
         "The list of tasks"
       ),
     },

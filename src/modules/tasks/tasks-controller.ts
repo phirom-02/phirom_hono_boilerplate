@@ -14,11 +14,11 @@ import { QueryBuilder } from "@/shared/lib";
 import { ContentfulStatusCode } from "hono/utils/http-status";
 
 type TasksController = {
+  createTask: AppRouteHandler<CreateTaskRoute>;
+
   getTasks: AppRouteHandler<GetTasksRoute>;
 
   getTaskById: AppRouteHandler<GetTaskRoute>;
-
-  createTask: AppRouteHandler<CreateTaskRoute>;
 
   updateTask: AppRouteHandler<UpdateTaskRoute>;
 
@@ -42,9 +42,17 @@ const tasksController: TasksController = {
       .paginate()
       .getQueries();
 
-    const _tasks = await tasksService.getTasks(queries);
+    const result = await tasksService.getTasks(queries);
 
-    return c.json(_tasks, HttpStatusCodes.OK);
+    return c.json(
+      {
+        meta: {
+          timestamp: new Date().toISOString(),
+        },
+        ...result,
+      },
+      HttpStatusCodes.OK
+    );
   },
 
   async getTaskById(c) {
