@@ -32,9 +32,9 @@ export default class QueryBuilder<T extends TableSchema, F extends TableField>
 
   private sortColums: SQL[] = [];
 
-  private limitValue: number | null = null;
+  private limitValue: number = env.MAX_LIMIT;
 
-  private offsetValue: number | null = null;
+  private offsetValue: number = 1;
 
   constructor(
     private queryString: Record<string, string>,
@@ -165,26 +165,28 @@ export default class QueryBuilder<T extends TableSchema, F extends TableField>
         .split(",")
         .map((field) => field.trim());
 
-      this.sortColums = sortFields
-        .map((field) => {
-          const isDescending = field.startsWith("-");
+      this.sortColums = this.sortColums.concat(
+        sortFields
+          .map((field) => {
+            const isDescending = field.startsWith("-");
 
-          const fieldName = isDescending ? field.substring(1) : field;
+            const fieldName = isDescending ? field.substring(1) : field;
 
-          if (fieldName in this.table) {
-            return isDescending
-              ? //@ts-expect-error
-                desc(this.table[fieldName])
-              : //@ts-expect-error
-                asc(this.table[fieldName]);
-          }
+            if (fieldName in this.table) {
+              return isDescending
+                ? //@ts-expect-error
+                  desc(this.table[fieldName])
+                : //@ts-expect-error
+                  asc(this.table[fieldName]);
+            }
 
-          return null;
-        })
-        .filter((field) => field !== null);
+            return null;
+          })
+          .filter((field) => field !== null)
+      );
     } else {
       if ("id" in this.table) {
-        this.sortColums = [desc(this.table["id"])];
+        this.sortColums.push(desc(this.table["id"]));
       }
     }
 

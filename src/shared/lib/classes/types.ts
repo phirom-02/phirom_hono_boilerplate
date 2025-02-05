@@ -3,8 +3,8 @@ import { SQL, SQLWrapper } from "drizzle-orm";
 export type GetQueriesReturns = {
   filter: SQLWrapper[];
   sortColumns: SQL[];
-  limitValue: number | null;
-  offsetValue: number | null;
+  limitValue: number;
+  offsetValue: number;
 };
 
 export interface IQueryBuilder {
